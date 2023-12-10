@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/css/style.css">  
+  </head>
+  <body>
+    <h1>Welcome to the IT122 Dealership!</h1>
+
+    <h3>Hi, stranger! Here's a list of our available cars:</h3>
+
+    <% cars.forEach(function(car) { %>
+      <li><a href="/cars/<%= car.id %>"> <%= car.year %> <%= car.make %> <%= car.model %></a> 
+    <% }) %>
+
+
+      
+    <h3><a href="/about">About</a></h3>
+
+      
+  </body>
+</html>
