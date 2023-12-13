@@ -1,23 +1,31 @@
 'use strict';
 import express from 'express';
-import * as data from './lib/data.js';
+import { Car } from './models/Car.js';
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 
-
 app.listen(app.get('port'), () => {
   console.log('Express started'); 
 });
 
-app.get('/', (req,res) => {
-  res.render('home', { cars: data.getAll() });
+app.get('/', (req, res, next) => {
+  Car.find({}).lean()
+    .then((cars) => {
+      res.render('home', { cars });
+    })
+    .catch(err => next(err))
 });
 
-app.get('/cars/:id', (req,res) => {
-  res.render('detail', { cars: data.getItem(req.params.id) });
+
+app.get('/cars', (req,res,next) => {
+  Car.findOne({ id:req.query.id }).lean()
+      .then((car) => {
+        res.render('detail', { car });
+      })
+      .catch(err => next(err));
 });
 
 app.get('/about', (req,res) => {
