@@ -8,7 +8,7 @@
           <h3>Hi, stranger! Here's a list of our available cars:</h3>
 
           <% cars.forEach(function(car) { %>
-            <li><a href="/cars?id=<%= car.id %>"> <%= `${car.year}` %> <%= `${car.make}` %> <%= `${car.model}` %></a> 
+            <li><a href="/cars?_id=<%= car._id %>"> <%= `${car.year}` %> <%= `${car.make}` %> <%= `${car.model}` %></a> 
           <% }) %>
 
 

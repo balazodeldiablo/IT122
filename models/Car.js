@@ -17,8 +17,7 @@ const carSchema = new Schema({
   model : { type: String, required: true },
   year : { type: Number, required: true },
   engine : String,
-  miles: Number,
-  id : { type: Number, required: true }
+  miles: Number
 });
 
 export const Car = mongoose.model('Car', carSchema);
