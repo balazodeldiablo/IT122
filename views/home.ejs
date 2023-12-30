@@ -1,20 +1,41 @@
-      <html>
-        <head>
-          <link rel="stylesheet" href="/css/style.css">  
-        </head>
-        <body>
-          <h1>Welcome to the IT122 Dealership!</h1>
+<html>
+<head>
+    <title>React App Demo</title>
+    <link rel="stylesheet" href="/css/style.css"> 
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 
-          <h3>Hi, stranger! Here's a list of our available cars:</h3>
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
 
-          <% cars.forEach(function(car) { %>
-            <li><a href="/cars?_id=<%= car._id %>"> <%= `${car.year}` %> <%= `${car.make}` %> <%= `${car.model}` %></a> 
-          <% }) %>
+<body>
 
+<div id="root"></div>
+<script type="text/babel">
+  
+    var cars = "<%= cars %>";
+    cars = JSON.parse(cars.replace(/&#34;/ig,'"'));
 
+    function CarList() {
+      const listItems = cars.map(car =>
+        <li key={car._id} ><a href={car._id}> {car.year} {car.make} {car.model} </a></li>
+      );
+      return (
+        <ul>{listItems}</ul>
+      );
+    }
 
-          <h3><a href="/about">About</a></h3>
+    const App = () => {
+      return <div>
+        <h1>Welcome to the IT122 Dealership!</h1>
+        <h3>Hi, stranger! Here's a list of our available cars:</h3>
+        <h2><CarList /></h2>
+      </div>;
+    }
 
+    ReactDOM.render(<App />, document.getElementById('root'));
 
-        </body>
-      </html>
+</script>
+</body>
+</html>
