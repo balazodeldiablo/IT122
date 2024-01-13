@@ -10,28 +10,72 @@
 </head>
 
 <body>
-
 <div id="root"></div>
 <script type="text/babel">
-  
-    var cars = "<%= cars %>";
-    cars = JSON.parse(cars.replace(/&#34;/ig,'"'));
+    const Cars = (props) => {
+        return(
+            <div>
+                <h3>List</h3>
+                <ul>
+                    {props.cars.map((item) => (<li onClick={props.onClick} key={item._id}>{item.model} </li>))}
+                </ul>
+            </div>
 
-    function CarList() {
-      const listItems = cars.map(car =>
-        <li key={car._id} ><a href={car._id}> {car.year} {car.make} {car.model} </a></li>
-      );
-      return (
-        <ul>{listItems}</ul>
-      );
+        )
     }
 
-    const App = () => {
-      return <div>
-        <h1>Welcome to the IT122 Dealership!</h1>
-        <h3>Hi, stranger! Here's a list of our available cars:</h3>
-        <h2><CarList /></h2>
-      </div>;
+    const CarDetail = (props) => {
+        return (
+            <div>
+                <h3>Car Details</h3>
+                <form>
+                    <b>Car ID number: </b> {props.car._id || "-"} <br />
+                    <b>Model: </b> <input type="text" name="model" value={props.car.model || "-" } onChange={props.onChange}/> <br />
+                    <b>Year: </b> <input type="text" name="year" value={props.car.year || "-"} onChange={props.onChange}/> <br />
+                    <b>Make: </b> <input type="text" name="make" value={props.car.make || "-" } onChange={props.onChange}/> <br />
+                    <b>Engine: </b> <input type="text" name="engine" value={props.car.engine || "-"} onChange={props.onChange}/> <br />
+                    <b>Mileage: </b> <input type="text" name="miles" value={props.car.miles || "-" } onChange={props.onChange}/> <br />
+                    <button type="button" onClick={props.clearForm}> CLEAR </button>
+                </form>
+            </div>
+        );
+    }
+
+    const App = (props) => {
+        const [items, setItems] = React.useState(<%- cars %>)
+        const [currentItem, setCurrentItem] = React.useState({})
+
+        const selectItem = (event) => {
+            const found = items.find((item) => {
+                return item.model === event.target.innerText
+            })
+
+            setCurrentItem(found)
+        }
+
+        const handleChange = (event) => {
+            let newItem = { ...currentItem}
+            newItem[event.target.name] = event.target.value
+            setCurrentItem(newItem)
+
+            items.find((item, index) => {
+                if (item._id === newItem._id) {
+                    items[index] = newItem
+                    setItems(items)
+                }
+            })
+        }
+
+        const clearForm = (event) => {
+            setCurrentItem({})
+        }
+
+        return <div>
+            <h1>Welcome to the IT122 Dealership!</h1>
+            <h3>Hi, stranger! Here's a list of our available cars:</h3>
+            <Cars onClick={selectItem} cars={items} />
+            <CarDetail car={currentItem} onChange={handleChange} clearForm={clearForm} />
+        </div>;
     }
 
     ReactDOM.render(<App />, document.getElementById('root'));

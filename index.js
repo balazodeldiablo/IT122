@@ -23,23 +23,20 @@ app.get("/", (req, res) => {
     .lean()
     .then((cars) => {
       res.render("home", {cars: JSON.stringify(cars)});
-    })
-    .catch((err) => {
-      res.status(500).send("Database Error occurred");
-    });
-  
+    }).catch((err) => next(err));
+
 });
 
 
 app.get("/:_id", (req, res, next) => {
-  
+
   Car.findOne({ _id: req.params._id })
     .lean()
     .then((car) => {
       res.render("detail", { car });
     })
     .catch((err) => next(err));
-  
+
 });
 
 
