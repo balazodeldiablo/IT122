@@ -11,11 +11,12 @@ mongoose.connection.on("open", () => {
 });
 
 const carSchema = new Schema({
-  make: { type: String, required: true },
+  make: { type: String, required: false },
   model: { type: String, required: true },
-  year: { type: Number, required: true },
+  year: { type: Number, required: false },
   engine: String,
   miles: Number,
 });
 
 export const Car = mongoose.model("Car", carSchema);
+

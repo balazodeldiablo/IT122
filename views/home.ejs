@@ -29,21 +29,38 @@
             <div>
                 <h3>Car Details</h3>
                 <form>
-                    <b>Car ID number: </b> {props.car._id || "-"} <br />
-                    <b>Model: </b> <input type="text" name="model" value={props.car.model || "-" } onChange={props.onChange}/> <br />
-                    <b>Year: </b> <input type="text" name="year" value={props.car.year || "-"} onChange={props.onChange}/> <br />
-                    <b>Make: </b> <input type="text" name="make" value={props.car.make || "-" } onChange={props.onChange}/> <br />
-                    <b>Engine: </b> <input type="text" name="engine" value={props.car.engine || "-"} onChange={props.onChange}/> <br />
-                    <b>Mileage: </b> <input type="text" name="miles" value={props.car.miles || "-" } onChange={props.onChange}/> <br />
+                    <b>Car ID number: </b> {props.car._id || ""} <br />
+                    <b>Model: </b> <input type="text" name="model" value={props.car.model || "" } onChange={props.onChange}/> <br />
+                    <b>Year: </b> <input type="text" name="year" value={props.car.year || ""} onChange={props.onChange}/> <br />
+                    <b>Make: </b> <input type="text" name="make" value={props.car.make || "" } onChange={props.onChange}/> <br />
+                    <b>Engine: </b> <input type="text" name="engine" value={props.car.engine || ""} onChange={props.onChange}/> <br />
+                    <b>Mileage: </b> <input type="text" name="miles" value={props.car.miles || "" } onChange={props.onChange}/> <br />
                     <button type="button" onClick={props.clearForm}> CLEAR </button>
+                    <button type="button" onClick={props.saveItem}> SAVE </button>
+                    <button type="button" onClick={props.deleteItem}> DELETE </button>
                 </form>
             </div>
         );
     }
 
     const App = (props) => {
-        const [items, setItems] = React.useState(<%- cars %>)
+        const [items, setItems] = React.useState([])
         const [currentItem, setCurrentItem] = React.useState({})
+
+        // LOAD DATA ONCE ON RENDER
+        React.useEffect(() => {
+            const fetchData = async () => {
+                // TO FETCH ITEMS
+                fetch("/api/cars")
+                    .then(res => res.json())
+                    .then((json) => {
+                        // SET ITEMS INTO THE ITEMS STATE
+                        setItems(json)
+                    })
+            }
+            fetchData()
+        }, [])
+        // REACT USE EFFECT WILL EXECUTE FUNCTION(FIRST PARAMETER) IF THE DATA(SECOND PARAMETER) CHANGES
 
         const selectItem = (event) => {
             const found = items.find((item) => {
@@ -51,6 +68,48 @@
             })
 
             setCurrentItem(found)
+        }
+
+        const saveItem = () => {
+            if (!currentItem.model) {
+                return
+            }
+
+            fetch("/api/add", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(currentItem)
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    // IF NO _ID IN THE REQUEST THEN IT MEAN THE ITEM WAS CREATED
+                    if (!currentItem._id) {
+                        // UPDATE DETAIL VIEW
+                        currentItem._id = data._id
+                        setCurrentItem(currentItem)
+
+                        // UPDATE LIST VIEW
+                        let newItems = [...items]
+                        newItems.push(currentItem)
+                        setItems(newItems)
+                    }
+                })
+        }
+
+        const deleteItem = () => {
+            let id = currentItem._id
+            fetch(`/api/delete/${id}`, {
+                method: 'DELETE',
+            })
+                .then(res => res.json())
+                .then((data) => {
+                    const newItems = items.filter((item) => {
+                        return item._id !== id
+                    })
+
+                    setItems(newItems)
+                    setCurrentItem({})
+                })
         }
 
         const handleChange = (event) => {
@@ -74,7 +133,13 @@
             <h1>Welcome to the IT122 Dealership!</h1>
             <h3>Hi, stranger! Here's a list of our available cars:</h3>
             <Cars onClick={selectItem} cars={items} />
-            <CarDetail car={currentItem} onChange={handleChange} clearForm={clearForm} />
+            <CarDetail
+                car={currentItem}
+                onChange={handleChange}
+                clearForm={clearForm}
+                saveItem={saveItem}
+                deleteItem={deleteItem}
+            />
         </div>;
     }
 
